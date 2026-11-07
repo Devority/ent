@@ -1,10 +1,11 @@
-module github.com/open-uem/ent
+module github.com/Devority/ent
 
 go 1.26.1
 
 require (
 	entgo.io/ent v0.14.4
 	github.com/google/uuid v1.6.0
+	github.com/open-uem/ent v0.0.0-20260427091717-6f7d005adb1d
 )
 
 require (
