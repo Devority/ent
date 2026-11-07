@@ -1,4 +1,4 @@
-module github.com/open-uem/ent
+module github.com/Devority/ent
 
 go 1.26.1
 
