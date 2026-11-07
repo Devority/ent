@@ -435,6 +435,28 @@ var (
 			},
 		},
 	}
+	// PendingUpdatesColumns holds the columns for the "pending_updates" table.
+	PendingUpdatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "kb_article_ids", Type: field.TypeString, Nullable: true},
+		{Name: "is_downloaded", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "agent_pending_updates", Type: field.TypeString},
+	}
+	// PendingUpdatesTable holds the schema information for the "pending_updates" table.
+	PendingUpdatesTable = &schema.Table{
+		Name:       "pending_updates",
+		Columns:    PendingUpdatesColumns,
+		PrimaryKey: []*schema.Column{PendingUpdatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "pending_updates_agents_pending_updates",
+				Columns:    []*schema.Column{PendingUpdatesColumns[4]},
+				RefColumns: []*schema.Column{AgentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PhysicalDisksColumns holds the columns for the "physical_disks" table.
 	PhysicalDisksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -820,7 +842,7 @@ var (
 	// TagsColumns holds the columns for the "tags" table.
 	TagsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "tag", Type: field.TypeString, Unique: true},
+		{Name: "tag", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "color", Type: field.TypeString},
 		{Name: "tag_children", Type: field.TypeInt, Nullable: true},
@@ -850,6 +872,13 @@ var (
 				Columns:    []*schema.Column{TagsColumns[6]},
 				RefColumns: []*schema.Column{TenantsColumns[0]},
 				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tag_tag_tenant_tags",
+				Unique:  true,
+				Columns: []*schema.Column{TagsColumns[1], TagsColumns[6]},
 			},
 		},
 	}
@@ -1266,6 +1295,7 @@ var (
 		NetworkAdaptersTable,
 		OperatingSystemsTable,
 		OrgMetadataTable,
+		PendingUpdatesTable,
 		PhysicalDisksTable,
 		PrintersTable,
 		ProfilesTable,
@@ -1312,6 +1342,7 @@ func init() {
 	NetworkAdaptersTable.ForeignKeys[0].RefTable = AgentsTable
 	OperatingSystemsTable.ForeignKeys[0].RefTable = AgentsTable
 	OrgMetadataTable.ForeignKeys[0].RefTable = TenantsTable
+	PendingUpdatesTable.ForeignKeys[0].RefTable = AgentsTable
 	PhysicalDisksTable.ForeignKeys[0].RefTable = AgentsTable
 	PrintersTable.ForeignKeys[0].RefTable = AgentsTable
 	ProfileIssuesTable.ForeignKeys[0].RefTable = ProfilesTable
